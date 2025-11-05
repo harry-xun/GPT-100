@@ -1,0 +1,8 @@
+--find-links https://download.pytorch.org/whl/cu124
+
+numpy
+matplotlib
+torch==2.8.0
+transformers
+datasets
+huggingface_hub
