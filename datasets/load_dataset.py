@@ -1,45 +1,48 @@
-from datasets import load_dataset
-
-# full_dataset = load_dataset("jtatman/python-code-dataset-500k")
-
-from collections import defaultdict
+from datasets import load_dataset, Dataset
 from tqdm import tqdm
-from datasets import Dataset
-
+from collections import defaultdict
+import os
 
 def any_keyword_in_string(string, keywords):
-    for keyword in keywords:
-        if keyword in string:
-            return True
-    return False
+    return any(k in string for k in keywords)
 
-
-def filter_streaming_dataset(dataset, filters):
-    filtered_dict = defaultdict(list)
+def stream_filter_and_push(dataset, filters, repo_id, chunk_size=50000):
     total = 0
-    for sample in tqdm(iter(dataset)):
+    kept = 0
+    batch = defaultdict(list)
+    batch_idx = 0
+
+    for sample in tqdm(dataset):
         total += 1
         if any_keyword_in_string(sample["content"], filters):
             for k, v in sample.items():
-                filtered_dict[k].append(v)
-    print(f"{len(filtered_dict['content'])/total:.2%} of data after filtering.")
-    return Dataset.from_dict(filtered_dict)
+                batch[k].append(v)
+            kept += 1
 
+        if len(batch["content"]) >= chunk_size:
+            batch_idx += 1
+            print(f"Pushing batch {batch_idx} with {len(batch['content'])} samples...")
+            temp_ds = Dataset.from_dict(batch)
+            temp_ds.push_to_hub(repo_id, split=f"chunk_{batch_idx}", private=True)
+            batch = defaultdict(list) 
 
-def print_size(dataset: Dataset):
-    print(f"Dataset size: {dataset.data.nbytes / (1024**3):.2f} GB")
+    if batch["content"]:
+        batch_idx += 1
+        print(f"Pushing final batch {batch_idx} with {len(batch['content'])} samples...")
+        temp_ds = Dataset.from_dict(batch)
+        temp_ds.push_to_hub(repo_id, split=f"chunk_{batch_idx}", private=True)
 
+    print(f"Done. Filtered {kept}/{total} ({kept/total:.2%}) samples.")
 
 if __name__ == "__main__":
     filters = ["pandas", "tqdm", "matplotlib", "spacy"]
-    # example_1 = "import numpy as np"
-    # example_2 = "import pandas as pd"
-
-    split = "train"  # "valid"
-    filters = ["pandas", "tqdm", "matplotlib", "spacy"]
+    split = "train"
 
     data = load_dataset(f"transformersbook/codeparrot-{split}", split=split, streaming=True)
-    filtered_data = filter_streaming_dataset(data, filters)
-    print_size(filtered_data)
 
-    filtered_data.push_to_hub("Harryxun/GPT-100-pretrain")
+    stream_filter_and_push(
+        data,
+        filters,
+        repo_id="Harryxun/GPT-100-pretrain",  
+        chunk_size=50000         
+    )
