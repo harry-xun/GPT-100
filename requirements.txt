@@ -1,8 +1,8 @@
---find-links https://download.pytorch.org/whl/cu124
-
 numpy
 matplotlib
 torch==2.8.0
-transformers
-datasets
-huggingface_hub
+torchvision==0.23
+transformers==4.57.1
+datasets==4.3.0
+huggingface_hub==0.36.0
+accelerate==1.11.0

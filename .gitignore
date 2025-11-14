@@ -1,12 +1,4 @@
-cat > .gitignore <<'EOF'
-install.txt
-kaggle.json
-
-**/__pycache__/
-
-datasets/*
-!datasets/**/*.py
-!datasets/__init__.py
-!datasets/README.md
-!datasets/.gitkeep
-EOF
+logs/*
+scripts/*
+llama-pretrained/*
+mlruns/*
