@@ -2,3 +2,4 @@ logs/*
 scripts/*
 llama-pretrained/*
 mlruns/*
+sft_output/*
