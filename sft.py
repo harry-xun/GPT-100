@@ -26,7 +26,7 @@ dataset_final = dataset_text.train_test_split(test_size=0.2, seed=SEED)
 
 print(dataset_final)
 
-# # Configure model and tokenizer
+# Configure model and tokenizer
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path=MODEL_NAME).to(device)
 
@@ -62,16 +62,6 @@ training_args = SFTConfig(
     eval_strategy="steps",
     eval_steps=500,
 )
-
-# --finetuning_type lora --lora_target q_proj,v_proj
-# --per_device_train_batch_size 4 
-# --gradient_accumulation_steps 4  
-# --lr_scheduler_type cosine 
-# --logging_steps 10 
-# --save_steps 1000 
-# --learning_rate 5e-5 
-# --num_train_epochs 100.0 
-
 
 # Initialize trainer
 trainer = SFTTrainer(

@@ -3,3 +3,5 @@ scripts/*
 llama-pretrained/*
 mlruns/*
 sft_output/*
+datasets/HaPy-Bug/*
+datasets/HaPy-Bug.tar.gz
