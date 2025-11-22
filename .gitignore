@@ -1,7 +1,8 @@
 logs/*
 scripts/*
-llama-pretrained/*
-mlruns/*
+llama-*
+mlruns
 sft_output/*
-datasets/HaPy-Bug/*
-datasets/HaPy-Bug.tar.gz
+datasets/BugsInPy
+datasets/FixEval
+datasets/kaggle_dataset.csv

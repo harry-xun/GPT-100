@@ -1,3 +1,4 @@
+import random
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
@@ -7,24 +8,19 @@ import torch
 
 
 MODEL_NAME = "Harryxun/llama-pretrained"
-DATASET_PATH = "Harryxun/HapyBug-Data"
+DATASET_PATH = "Harryxun/stf_run"
+# DATASET_PATH = "Harryxun/sft_time"
 SEED = 42
+random.seed(SEED)
 
 
 # Load dataset
 dataset = load_dataset(DATASET_PATH, split='train')
-
-def create_text(example):
-    prompt = example["buggy"] + "\n### FIXED CODE ###\n"
-    target = example["fixed"]
-    # train on prompt + answer as one sequence
-    return {"text": prompt + target}
-
-dataset_text = dataset.map(create_text)
-dataset_text = dataset_text.remove_columns(["buggy", "fixed"])
-dataset_final = dataset_text.train_test_split(test_size=0.2, seed=SEED)
-
-print(dataset_final)
+# use portion of dataset to speed up training
+indices = random.sample(range(len(dataset)), k=50000)
+dataset = dataset.select(indices)
+# create train/eval splits within original "train" split
+dataset = dataset.train_test_split(test_size=0.2, seed=SEED)
 
 # Configure model and tokenizer
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -39,6 +35,7 @@ lora_alpha = 32.0
 lora_dropout = 0.1
 
 peft_config = LoraConfig(
+    modules_to_save= ["embed_tokens", "lm_head"],
     r=rank_dimension,  # Rank dimension - typically between 4-32
     lora_alpha=lora_alpha,  # LoRA scaling factor - typically 2x rank
     lora_dropout=lora_dropout,  # Dropout probability for LoRA layers
@@ -49,8 +46,9 @@ peft_config = LoraConfig(
 
 # Configure trainer
 training_args = SFTConfig(
-    output_dir="./sft_output",
+    output_dir="llama-sft",
     dataset_text_field="text",
+    max_length=5000,  # max token length: 131072
     # max_steps=1000,
     num_train_epochs=50.0,
     per_device_train_batch_size=4,
@@ -67,11 +65,11 @@ training_args = SFTConfig(
 trainer = SFTTrainer(
     model=model,
     args=training_args,
-    train_dataset=dataset_final["train"],
-    eval_dataset=dataset_final["test"],
+    train_dataset=dataset["train"],
+    eval_dataset=dataset["test"],
     peft_config=peft_config,  # LoRA configuration
-    # max_seq_length=max_seq_length,  # Maximum sequence length
 )
 
 # Start training
 trainer.train()
+trainer.push_to_hub()

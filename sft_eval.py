@@ -6,7 +6,7 @@ from peft import PeftModel
 DATASET_PATH = "Harryxun/HapyBug-Data"
 SEED = 42
 
-# MODEL_PATH = "./sft_output/checkpoint-37250"
+# MODEL_PATH = "./sft_output/checkpoint-3050"
 MODEL_PATH = "Harryxun/llama-pretrained"
 device = "cuda" 
 
@@ -48,7 +48,7 @@ with torch.no_grad():
         **inputs,
         max_new_tokens=128,
         do_sample=True,
-        temperature=0.4,
+        temperature=0.2,
         top_p=0.9,
         repetition_penalty=1.1
     )

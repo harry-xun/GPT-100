@@ -3,8 +3,10 @@ from tqdm import tqdm
 from collections import defaultdict
 import os
 
+
 def any_keyword_in_string(string, keywords):
     return any(k in string for k in keywords)
+
 
 def stream_filter_and_push(dataset, filters, repo_id, split_name="train"):
     total = 0
@@ -30,7 +32,7 @@ def stream_filter_and_push(dataset, filters, repo_id, split_name="train"):
 
 
 if __name__ == "__main__":
-    filters = ["pandas", "tqdm", "matplotlib", "spacy"]
+    filters = ["pandas", "keras", "fastapi", "matplotlib", "spacy"]
     split = "train"
 
     data = load_dataset(f"transformersbook/codeparrot-{split}", split=split, streaming=True)
