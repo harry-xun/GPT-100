@@ -3,11 +3,12 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
-DATASET_PATH = "Harryxun/HapyBug-Data"
+DATASET_PATH = "Harryxun/stf_run"
 SEED = 42
 
 # MODEL_PATH = "./sft_output/checkpoint-3050"
-MODEL_PATH = "Harryxun/llama-pretrained"
+# MODEL_PATH = "Harryxun/llama-pretrained"
+MODEL_PATH = "./llama-pretrained-1/checkpoint-83824"
 device = "cuda" 
 
 # # Load dataset
@@ -33,12 +34,18 @@ model = AutoModelForCausalLM.from_pretrained(MODEL_PATH).to(device)
 model.eval()
 
 # prompt = format_prompt(dataset_test[0])
-prompt = """\
-# create some data
-x = np.random.randn(100)
-y = np.random.randn(100)
+# prompt = """\
+# # create some data
+# x = np.random.randn(100)
+# y = np.random.randn(100)
 
-# create scatter plot with x, y
+# # create scatter plot with x, y
+# """
+prompt = """
+# create some data
+x = [1, 2, 3, 4, 5, 6, 7]
+
+# loop and print each element in x
 """
 print("Prompt:\n", prompt)
 

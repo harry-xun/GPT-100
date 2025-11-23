@@ -32,7 +32,7 @@ def stream_filter_and_push(dataset, filters, repo_id, split_name="train"):
 
 
 if __name__ == "__main__":
-    filters = ["pandas", "keras", "fastapi", "matplotlib", "spacy"]
+    filters = ["pandas", "keras", "matplotlib", "spacy"] 
     split = "train"
 
     data = load_dataset(f"transformersbook/codeparrot-{split}", split=split, streaming=True)

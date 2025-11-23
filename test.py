@@ -1,41 +1,29 @@
-from datasets import load_dataset
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from peft import PeftModel
 import json
+# from datasets import load_dataset, DatasetDict
 
 
-DST_REPO = "Harryxun/GPT-100-dataset-SFT"
-DATASET_PATH = "Harryxun/HapyBug-Data"
-SEED = 42
+# DATASET_REPO = "Harryxun/GPT-100-dataset"
 
-# Load dataset
-# dataset = load_dataset(DATASET_PATH, split='train')
+# # load dataset
+# ds_train = load_dataset(DATASET_REPO, split="train")
 
-# def create_text(example):
-#     prompt = example["buggy"] + "\n### FIXED CODE ###\n"
-#     target = example["fixed"]
-#     # train on prompt + answer as one sequence
-#     return {"text": prompt + target}
+# print(ds_train['content'][20])
 
+file_path = f"datasets/FixEval/data/python/jsons/0.json"
+with open(file_path, 'r') as f:
+    data = json.load(f)
 
-# dataset_text = dataset.map(create_text)
-# dataset_text = dataset_text.remove_columns(["buggy", "fixed"])
-# dataset_final = dataset_text.train_test_split(test_size=0.2, seed=SEED)
+with open('asdf.json', 'w') as f:
+    json.dump(data[0][0], f, indent=4)
+    json.dump(data[0][1], f, indent=4)
 
-# print(dataset_final)
-# print(dataset_final['train'][0])
-# print(type(dataset_final))
+# for pair in data:
+#     if len(pair) != 2:
+#         print("Data isn't paired")
+#         continue
+#     assert pair[1]['verdict'] == 'Accepted'
 
+#     data_git['bug_type'].append(pair[0]['verdict'])
+#     data_git['buggy'].append(pair[0]['code_tokens'])
+#     data_git['fixed'].append(pair[1]['code_tokens'])
 
-# dataset_final.push_to_hub(DST_REPO, private=True)
-
-with open('datasets/HaPy-Bug/annotated_data/A_1_24.json', 'r') as file:
-    data_raw = json.load(file)
-# print(data_raw[0])
-print(json.dumps(data_raw[0], indent=4))
-print(data_raw[0]['data']['gitCommits'][0]['diff'])
-
-# dataset = load_dataset(DATASET_PATH, split='train')
-# print(dataset['buggy'])
-# print(dataset['fixed'])

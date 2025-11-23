@@ -6,7 +6,7 @@ from transformers import Trainer, TrainingArguments
 
 MODEL_NAME = "meta-llama/Llama-3.2-1B"
 DATASET_REPO = "Harryxun/GPT-100-dataset"
-CONTEXT_LENGTH = 128
+BATCH_LENGTH = 128
 
 
 # load dataset
@@ -21,23 +21,6 @@ pretrain_dataset = DatasetDict(
         "test": ds_test,         # .shuffle().select(range(1000))
     }
 )
-# example training python file
-# print(pretrain_dataset["train"][0]["content"])
-
-
-# # tokenization example
-# tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-# outputs = tokenizer(
-#     pretrain_dataset["train"][:2]["content"],
-#     truncation=True,
-#     max_length=CONTEXT_LENGTH,
-#     return_overflowing_tokens=True,
-#     return_length=True,
-# )
-
-# print(f"Input IDs length: {len(outputs['input_ids'])}")
-# print(f"Input chunk lengths: {(outputs['length'])}")
-# print(f"Chunk mapping: {outputs['overflow_to_sample_mapping']}")
 
 
 # tokenization
@@ -47,21 +30,20 @@ def tokenize(element):
     outputs = tokenizer(
         element["content"],
         truncation=True,
-        max_length=CONTEXT_LENGTH,
+        max_length=BATCH_LENGTH,
         return_overflowing_tokens=True,
         return_length=True,
     )
     input_batch = []
     for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
-        if length == CONTEXT_LENGTH:
+        if length == BATCH_LENGTH:
+            # input_ids = input_ids + [eos_id]  # append EOS after each example
             input_batch.append(input_ids)
     return {"input_ids": input_batch}
-
 
 tokenized_datasets = pretrain_dataset.map(
     tokenize, batched=True, remove_columns=pretrain_dataset["train"].column_names
 )
-# print(tokenized_datasets)
 
 
 # initializing model
@@ -81,7 +63,6 @@ print(f"Llama size: {model_size/1000**2:.1f}M parameters")
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)  # running for causal, not masked
 
-
 # training
 args = TrainingArguments(
     output_dir="llama-pretrained",
@@ -89,8 +70,8 @@ args = TrainingArguments(
     per_device_eval_batch_size=32,
     eval_strategy="steps",
     save_strategy="steps",
-    eval_steps=5_000,
-    logging_steps=5_000,
+    eval_steps=5_000,          # change back to 5000
+    logging_steps=5_000,       # change back to 5000
     gradient_accumulation_steps=8,
     num_train_epochs=2,
     weight_decay=0.1,
@@ -112,4 +93,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-trainer.push_to_hub()
+# trainer.push_to_hub()

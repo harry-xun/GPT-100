@@ -6,3 +6,4 @@ sft_output/*
 datasets/BugsInPy
 datasets/FixEval
 datasets/kaggle_dataset.csv
+test*
