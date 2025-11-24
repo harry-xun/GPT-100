@@ -3,26 +3,12 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
+
 DATASET_PATH = "Harryxun/stf_run"
 SEED = 42
 
-# MODEL_PATH = "./sft_output/checkpoint-3050"
-# MODEL_PATH = "Harryxun/llama-pretrained"
 MODEL_PATH = "./llama-pretrained-1/checkpoint-83824"
 device = "cuda" 
-
-# # Load dataset
-# dataset = load_dataset(DATASET_PATH, split='train')
-# dataset_test = dataset.train_test_split(test_size=0.2, seed=SEED)['test']
-
-# def format_prompt(example):
-#     return example['buggy'] + "\n### FIXED CODE ###\n"
-
-
-# print("Prompt:\n", format_prompt(dataset_test[0]))
-# print("Gold:\n", dataset_test[0]['fixed'])
-
-
 
 
 # load pretrained/sft model/tokenizer
@@ -33,23 +19,21 @@ if tokenizer.pad_token is None:
 model = AutoModelForCausalLM.from_pretrained(MODEL_PATH).to(device)
 model.eval()
 
-# prompt = format_prompt(dataset_test[0])
-# prompt = """\
-# # create some data
-# x = np.random.randn(100)
-# y = np.random.randn(100)
 
-# # create scatter plot with x, y
-# """
+# example prompt
 prompt = """
-# create some data
-x = [1, 2, 3, 4, 5, 6, 7]
-
-# loop and print each element in x
+N = int(input())
+total = 0 
+X = list( input().split())
+for i in X: 
+    total +=  (X[i] - N) * (X[i] - N)
+print(total)
+\n\n### FIXED CODE ###\n\n
 """
-print("Prompt:\n", prompt)
+
 
 inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+
 with torch.no_grad():
     out = model.generate(
         **inputs,

@@ -4,6 +4,11 @@ from collections import defaultdict
 import os
 
 
+SRC_REPO = "Harryxun/GPT-100-rawdataset"       
+DST_REPO = "Harryxun/GPT-100-dataset"
+SEED = 42
+
+
 def any_keyword_in_string(string, keywords):
     return any(k in string for k in keywords)
 
@@ -31,15 +36,30 @@ def stream_filter_and_push(dataset, filters, repo_id, split_name="train"):
         print("Done. No samples seen.")
 
 
+def split_train_test(dataset):
+    splits = dataset.train_test_split(test_size=0.2, seed=SEED, shuffle=True)
+    dataset = DatasetDict({
+        "train": splits["train"],
+        "test":  splits["test"],
+    })
+    dataset.push_to_hub(DST_REPO, private=True)
+
+
 if __name__ == "__main__":
     filters = ["pandas", "keras", "matplotlib", "spacy"] 
     split = "train"
 
+    # load raw dataset (only train - still excessive examples)
     data = load_dataset(f"transformersbook/codeparrot-{split}", split=split, streaming=True)
 
+    # filter and (temporarily) push
     stream_filter_and_push(
         data,
         filters,
-        repo_id="Harryxun/GPT-100-rawdataset",
+        repo_id=SRC_REPO,
         split_name=split
     )
+    
+    # split dataset into train/test
+    raw_dataset = load_dataset(SRC_REPO, split="train")
+    split_train_test(raw_dataset)
