@@ -8,6 +8,7 @@ bash scripts/kill_process.sh
 # Initialize
 Install required packages and create required directories. 
 ```
+pip install torch==2.8.0
 pip install -r requirements.txt
 mkdir logs
 mkdir generations
@@ -104,6 +105,20 @@ Run the script below to run the testing suite on the generated model outputs.
 bash scripts/eval.sh
 ```
 Log output directory: `./logs/eval_out.txt`.
+
+## Evaluation (Python-Bugs)
+
+Run the Python file below to use the SFT model to generate outputs from the Python-Bugs test split.
+
+```
+python generate_outputs2.py
+```
+
+Run the Python file below to calculate the exact match rate of both datasets and plot the Levenshtein distance distribution. (Make sure to run both `generate_outputs.py` and `generate_outputs2.py` beforehand.) Change `CUTLINE` variable to alter Levenshtein distance cutline to be considered correct. 
+
+```
+python evaluate.py
+```
 
 # Acknowledgement
 

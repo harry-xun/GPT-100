@@ -25,8 +25,11 @@ def process_format(data):
         data['detokenized_generations'] = row['output']
         generated.append(data)
 
-    with open('generations/formatted.jsonl') as f:
-        json.dump(generated, f)
+    with open('generations/formatted.json', 'w') as f:
+        json.dump(generated, f, indent=4)
+        # for entry in generated:
+        #     json.dump(entry, f)
+        #     f.write('\n')
         
 
 if __name__=='__main__':

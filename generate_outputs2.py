@@ -3,28 +3,28 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_dataset
 
 
-DATASET_PATH = "Harryxun/GPT-100-sft-dataset"
-JSONL_PATH = "generations/outputs.jsonl"
+DATASET_PATH = "Harryxun/GPT-100-sft-dataset-small"
+JSONL_PATH = "generations/outputs2.jsonl"
 
-MODEL_PATH = "./llama-sft/checkpoint-5000"
+MODEL_PATH = "./llama-sft2/checkpoint-1500"
 SEED = 42
 device = "cuda" 
 DIV = "\n\n### FIXED CODE ###\n\n"
 
 
 def create_text(example):
-    prompt = example["buggy"] + DIV
+    prompt = example["prompt_code"] + DIV
     # train on prompt + answer as one sequence
     return {
         "prompt": prompt,
-        "completion": example["fixed"].strip()
+        "completion": example["correct_code"].strip()
     }
 
 
-# Load dataset subset --> evaluating all with FixEval test suite would take too long
-dataset = load_dataset(DATASET_PATH, split='test').shuffle(seed=SEED).select(range(500))
+# Load dataset
+dataset = load_dataset(DATASET_PATH, split='test')
 dataset = dataset.map(create_text)                              # format dataset properly
-
+dataset = dataset.remove_columns(['index', 'task', 'prompt_code'])
 print(dataset)
 
 

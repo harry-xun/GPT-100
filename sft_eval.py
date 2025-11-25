@@ -7,7 +7,9 @@ from peft import PeftModel
 DATASET_PATH = "Harryxun/stf_run"
 SEED = 42
 
-MODEL_PATH = "./llama-pretrained-1/checkpoint-83824"
+# MODEL_PATH = "./llama-pretrained-1/checkpoint-83824"
+# MODEL_PATH = "./llama-pretrained/checkpoint-10000"
+MODEL_PATH = "./llama-sft2/checkpoint-1500"
 device = "cuda" 
 
 
@@ -21,23 +23,27 @@ model.eval()
 
 
 # example prompt
-prompt = """
-N = int(input())
-total = 0 
-X = list( input().split())
-for i in X: 
-    total +=  (X[i] - N) * (X[i] - N)
-print(total)
-\n\n### FIXED CODE ###\n\n
+prompt = """\
+def __init__(self, owner=None):
+    owner.owner = owner
+    self.editing = False
+
+    QTreeWidget.__init__(self, owner)
+    self.setColumnCount(3)
+    self.setHeaderLabels([_("Address"), _("Label"), _("Used")])
+    self.setIndentation(0)
+
+    self.hide_used = True
+    self.setColumnHidden(2, True)\n\n### FIXED CODE ###\n\n
 """
 
 
-inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+inputs = tokenizer(prompt, add_special_tokens=True, return_tensors="pt").to(model.device)
 
 with torch.no_grad():
     out = model.generate(
         **inputs,
-        max_new_tokens=128,
+        max_new_tokens=256,
         do_sample=True,
         temperature=0.2,
         top_p=0.9,
@@ -45,9 +51,3 @@ with torch.no_grad():
     )
 
 print("Model:\n", tokenizer.decode(out[0], skip_special_tokens=True))
-
-
-# # inputs = tokenizer(prompt, return_tensors="pt")
-# inputs = tokenizer.encode(prompt, return_tensors="pt").to(device)
-# outputs = model.generate(inputs)
-# print(tokenizer.decode(outputs[0]))

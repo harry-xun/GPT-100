@@ -6,3 +6,6 @@ datasets/BugsInPy
 datasets/FixEval
 datasets/kaggle_dataset.csv
 test*
+output_py.txt
+garbage_py
+generations/*

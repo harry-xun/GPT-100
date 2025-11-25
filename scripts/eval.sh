@@ -1,1 +1,2 @@
-nohup python datasets/FixEval/evaluation/execution_evaluation_TC_arc_MP.py --references generations/formatted.jsonl --language python --test_cases datasets/FixEval/data/atcoder_test_cases --problem_list datasets/FixEval/src/problem_list.csv >> logs/eval_out.txt 2>&1 &
+nohup python datasets/FixEval/evaluation/execution_evaluation_TC_arc_MP.py --references generations/formatted.json --language python --test_cases datasets/FixEval/data/atcoder_test_cases --problem_list datasets/FixEval/src/problem_list.csv >> logs/eval_out.txt 2>&1 &
+echo $! > logs/save_pid.txt
