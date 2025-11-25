@@ -9,7 +9,10 @@ bash scripts/kill_process.sh
 Install required packages and create required directories. 
 ```
 pip install torch==2.8.0
+pip install torchvision==0.23.0
 pip install -r requirements.txt
+pip install --upgrade transformers
+pip install --upgrade peft
 mkdir logs
 mkdir generations
 ```

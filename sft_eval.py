@@ -9,7 +9,8 @@ SEED = 42
 
 # MODEL_PATH = "./llama-pretrained-1/checkpoint-83824"
 # MODEL_PATH = "./llama-pretrained/checkpoint-10000"
-MODEL_PATH = "./llama-sft2/checkpoint-1500"
+MODEL_PATH = "./llama-sft/checkpoint-5000"
+# MODEL_PATH = "./llama-sft2/checkpoint-1500"
 device = "cuda" 
 
 
@@ -24,17 +25,17 @@ model.eval()
 
 # example prompt
 prompt = """\
-def __init__(self, owner=None):
-    owner.owner = owner
-    self.editing = False
+def main():
+    a,b = input().split()
+    a = int(a)
+    b_n = b[0]
+    b_ = b[2:]
+    ans = a*int(b_n)
+    a = str(int(b_)*a)[:-2]
+    print(ans+int(a))
 
-    QTreeWidget.__init__(self, owner)
-    self.setColumnCount(3)
-    self.setHeaderLabels([_("Address"), _("Label"), _("Used")])
-    self.setIndentation(0)
-
-    self.hide_used = True
-    self.setColumnHidden(2, True)\n\n### FIXED CODE ###\n\n
+if __name__ == "__main__":
+    main()\n\n### FIXED CODE ###\n\n
 """
 
 
